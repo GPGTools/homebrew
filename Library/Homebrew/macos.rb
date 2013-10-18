@@ -190,7 +190,15 @@ module MacOS extend self
     "4.3.3" => {:llvm_build_version=>2336, :clang_version=>"3.1", :clang_build_version=>318},
     "4.4" => {:llvm_build_version=>2336, :clang_version=>"4.0", :clang_build_version=>421},
     "4.4.1" => {:llvm_build_version=>2336, :clang_version=>"4.0", :clang_build_version=>421},
-    "4.5" => {:llvm_build_version=>2336, :clang_version=>"4.1", :clang_build_version=>421}
+    "4.5" => {:llvm_build_version=>2336, :clang_version=>"4.1", :clang_build_version=>421},
+    "4.5.1" => { :llvm_build_version => 2336, :clang_version => "4.1", :clang_build_version => 421 },
+    "4.5.2" => { :llvm_build_version => 2336, :clang_version => "4.1", :clang_build_version => 421 },
+    "4.6"   => { :llvm_build_version => 2336, :clang_version => "4.2", :clang_build_version => 425 },
+    "4.6.1" => { :llvm_build_version => 2336, :clang_version => "4.2", :clang_build_version => 425 },
+    "4.6.2" => { :llvm_build_version => 2336, :clang_version => "4.2", :clang_build_version => 425 },
+    "4.6.3" => { :llvm_build_version => 2336, :clang_version => "4.2", :clang_build_version => 425 },
+    "5.0"   => { :clang_version => "5.0", :clang_build_version => 500 },
+    "5.0.1" => { :clang_version => "5.0", :clang_build_version => 500 }
   }
 
   def compilers_standard?
