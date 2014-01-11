@@ -2,12 +2,13 @@ require 'formula'
 
 class Appledoc < Formula
   homepage 'http://appledoc.gentlebytes.com/'
-  url "https://github.com/tomaz/appledoc/tarball/v2.0.6"
-  sha1 '8e9030425aad78db16b79841568b26a6c085d255'
+  url "https://github.com/tomaz/appledoc/archive/v2.2.tar.gz"
+  sha1 '4ad475ee6bdc2e34d6053c4e384aad1781349f5e'
 
   head 'https://github.com/tomaz/appledoc.git', :branch => 'master'
 
-  depends_on :xcode # For working xcodebuild.
+  depends_on :xcode
+  depends_on :macos => :lion
 
   def install
     system "xcodebuild", "-project", "appledoc.xcodeproj",

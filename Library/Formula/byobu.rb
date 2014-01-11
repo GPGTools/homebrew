@@ -1,12 +1,14 @@
 require 'formula'
 
 class Byobu < Formula
-  homepage 'http://launchpad.net/byobu'
-  url 'https://launchpad.net/byobu/trunk/5.21/+download/byobu_5.21.orig.tar.gz'
-  sha1 '81ed721b643addf84c7aba10f173c27dc69391bd'
+  homepage 'http://byobu.co'
+  url 'https://launchpad.net/byobu/trunk/5.69/+download/byobu_5.69.orig.tar.gz'
+  sha1 '28823d25563e4356ac7dde7726d7dc68fb01ead8'
 
   depends_on 'coreutils'
   depends_on 'gnu-sed' # fails with BSD sed
+  depends_on 'tmux'
+  depends_on 'newt' => 'with-python'
 
   def install
     system "./configure", "--prefix=#{prefix}"

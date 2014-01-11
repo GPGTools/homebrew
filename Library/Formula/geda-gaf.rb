@@ -1,13 +1,13 @@
 require 'formula'
 
 class GedaGaf < Formula
-  homepage 'http://geda.seul.org'
-  url 'http://geda.seul.org/release/v1.6/1.6.2/geda-gaf-1.6.2.tar.gz'
-  sha1 '87c21b3b77eebc8eec1c16672d4b1ab418ccb80d'
+  homepage 'http://www.geda-project.org/'
+  url 'http://ftp.geda-project.org/geda-gaf/stable/v1.8/1.8.2/geda-gaf-1.8.2.tar.gz'
+  sha1 'c61edc04997fc12398534a346dac32d8fcdabcc1'
 
   devel do
-    url 'http://geda.seul.org/devel/v1.7/1.7.2/geda-gaf-1.7.2.tar.gz'
-    sha1 '519f759211158a61689646e9963cb8c4bb5bb9a4'
+    url 'http://ftp.geda-project.org/geda-gaf/unstable/v1.9/1.9.0/geda-gaf-1.9.0.tar.gz'
+    sha1 '2b6732238ca5ed6693695d737e52aef1bdb2a589'
   end
 
   depends_on 'pkg-config' => :build
@@ -17,21 +17,20 @@ class GedaGaf < Formula
   depends_on 'gawk'
   depends_on :x11
 
-  # MacPorts fix for glib 2.32 includes
-  # Needed for 1.6.2 and 1.7.x
-  def patches
-    {:p0 => [
-      "https://trac.macports.org/export/92743/trunk/dports/science/geda-gaf/files/patch-glib-2.32.diff"
-    ]}
-  end
-
   def install
     # Help configure find libraries
     gettext = Formula.factory('gettext')
+    pcb = Formula.factory('pcb')
 
+    extra_configure_args = []
+    if !build.devel?
+      extra_configure_args << "--with-pcb-confdir=#{pcb.etc/:pcb}"
+    end
     system "./configure", "--prefix=#{prefix}",
                           "--with-gettext=#{gettext.prefix}",
-                          "--disable-update-xdg-database"
+                          "--disable-update-xdg-database",
+                          "--with-pcb-datadir=#{HOMEBREW_PREFIX/:share/:pcb}",
+                          *extra_configure_args
 
     system "make"
     system "make install"
@@ -41,3 +40,4 @@ class GedaGaf < Formula
     "This software runs under X11."
   end
 end
+

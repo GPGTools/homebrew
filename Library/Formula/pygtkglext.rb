@@ -11,21 +11,13 @@ class Pygtkglext < Formula
   depends_on 'pygobject'
 
   def install
-    ENV['PYGTK_CODEGEN'] = which 'pygobject-codegen-2.0'
+    ENV['PYGTK_CODEGEN'] = Formula.factory('pygobject').opt_prefix/'bin/pygobject-codegen-2.0'
     system "./configure", "--disable-debug", "--disable-dependency-tracking",
                           "--prefix=#{prefix}"
     system "make install"
   end
 
-  def test
-    # Test importing the modules
-    mktemp do
-      (Pathname.pwd+'test.py').write <<-EOS.undent
-        import pygtk
-        pygtk.require('2.0')
-        import gtk.gtkgl
-      EOS
-      system "python test.py"
-    end
+  test do
+    system "python", "-c", "import pygtk", "pygtk.require('2.0')", "import gtk.gtkgl"
   end
 end

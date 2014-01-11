@@ -2,8 +2,8 @@ require 'formula'
 
 class Concurrencykit < Formula
   homepage 'http://concurrencykit.org'
-  url 'http://concurrencykit.org/releases/ck-0.2.6.tar.gz'
-  sha1 '875f2692bcf151ba38a245d908f9f933e81e65cb'
+  url 'http://concurrencykit.org/releases/ck-0.3.4.tar.gz'
+  sha1 'bf32af29ca174f068ed8772aed1647ab3d474264'
 
   head 'git://git.concurrencykit.org/ck.git'
 
@@ -11,5 +11,7 @@ class Concurrencykit < Formula
     system "./configure", "--prefix=#{prefix}"
     system "make", "CC=#{ENV.cc}"
     system "make install"
+    mv lib/"libck.so.0", lib/"libck.0.dylib"
+    mv lib/"libck.so.#{version}", lib/"libck.#{version}.dylib"
   end
 end

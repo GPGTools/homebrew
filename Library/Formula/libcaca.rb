@@ -24,16 +24,17 @@ class Libcaca < Formula
 
   def install
     # Some people can't compile when Java is enabled. See:
-    # https://github.com/mxcl/homebrew/issues/issue/2049
+    # https://github.com/Homebrew/homebrew/issues/issue/2049
 
     # Don't build csharp bindings
     # Don't build ruby bindings; fails for adamv w/ Homebrew Ruby 1.9.2
-    # Don't build python bindings:
+
+    # Fix --destdir issue.
     #   ../.auto/py-compile: Missing argument to --destdir.
+    inreplace 'python/Makefile.in', '$(am__py_compile) --destdir "$(DESTDIR)"', "$(am__py_compile) --destdir \"$(cacadir)\""
 
     system "./configure", "--disable-dependency-tracking",
                           "--prefix=#{prefix}",
-                          "--disable-python",
                           "--disable-doc",
                           "--disable-slang",
                           "--disable-java",

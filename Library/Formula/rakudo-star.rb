@@ -2,8 +2,10 @@ require 'formula'
 
 class RakudoStar < Formula
   homepage 'http://rakudo.org/'
-  url 'https://github.com/downloads/rakudo/star/rakudo-star-2012.07.tar.gz'
-  sha256 '684cb3bb1f8fb95be10fae8d778dec41082e8f5d617aa99e919210e70b7e1b3d'
+  url 'http://rakudo.org/downloads/star/rakudo-star-2013.12.tar.gz'
+  sha256 '6a257e5f7879e0a9d7199edcfd47bd5a09dc4d9f5d91f124429af04974a836d3'
+
+  conflicts_with 'parrot'
 
   depends_on 'gmp' => :optional
   depends_on 'icu4c' => :optional
@@ -13,20 +15,13 @@ class RakudoStar < Formula
   def install
     libffi = Formula.factory("libffi")
     ENV.remove 'CPPFLAGS', "-I#{libffi.include}"
-    ENV.prepend 'CPPFLAGS', "-I#{libffi.lib}/libffi-3.0.11/include"
+    ENV.prepend 'CPPFLAGS', "-I#{libffi.lib}/libffi-#{libffi.version}/include"
 
     ENV.j1  # An intermittent race condition causes random build failures.
-    system "perl", "Configure.pl", "--prefix=#{prefix}", "--gen-parrot"
+    system "perl", "Configure.pl", "--prefix=#{prefix}", "--backends=parrot", "--gen-parrot"
     system "make"
     system "make install"
     # move the man pages out of the top level into share.
     mv "#{prefix}/man", share
-  end
-
-  def caveats; <<-EOS
-    Raukdo Star comes with its own specific version of Parrot. Installing the
-    Parrot formula along side the Rakudo Star formula will override a number
-    of the binaries (eg. parrot, nqp, winxed, etc.).
-    EOS
   end
 end

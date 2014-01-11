@@ -2,52 +2,59 @@ require 'formula'
 
 class Shiboken < Formula
   homepage 'http://www.pyside.org/docs/shiboken'
-  url 'http://pyside.org/files/shiboken-1.1.1.tar.bz2'
-  sha1 'd24efc1e7499e9d7db4dfc85a975291e3cb3f311'
+  url 'http://download.qt-project.org/official_releases/pyside/shiboken-1.2.1.tar.bz2'
+  mirror 'https://distfiles.macports.org/py-shiboken/shiboken-1.2.1.tar.bz2'
+  sha1 'f310ac163f3407109051ccebfd192bc9620e9124'
+
+  head 'git://gitorious.org/pyside/shiboken.git'
 
   depends_on 'cmake' => :build
   depends_on 'qt'
 
+  def patches
+    # This fixes issues with libc++ and its lack of the tr1 namespace.
+    # Upstream ticket: https://bugreports.qt-project.org/browse/PYSIDE-200
+    # Patch is currently under code review at: https://codereview.qt-project.org/#change,69324
+    DATA
+  end
+
   def install
-    # Building the tests also runs them. Not building and running tests cuts
-    # install time in half.  As of 1.1.1 the install fails unless you do an
-    # out of tree build and put the source dir last in the args.
-    mkdir 'macbuild' do
-      args = std_cmake_args + %W[
-        -DBUILD_TESTS=OFF
-      ]
-
-
-      python_prefix = `python-config --prefix`.strip
-      # Python is actually a library. The libpythonX.Y.dylib points to this lib, too.
-      if File.exist? "#{python_prefix}/Python"
-        # Python was compiled with --framework:
-        args << "-DPYTHON_LIBRARY='#{python_prefix}/Python'"
-        if !MacOS.clt_installed? and python_prefix.start_with? '/System/Library'
-          # For Xcode-only systems, the headers of system's python are inside of Xcode
-          args << "-DPYTHON_INCLUDE_DIR='#{MacOS.sdk_path}/System/Library/Frameworks/Python.framework/Versions/2.7/Headers'"
-        else
-          args << "-DPYTHON_INCLUDE_DIR='#{python_prefix}/Headers'"
-        end
-      else
-        python_version = `python-config --libs`.match('-lpython(\d+\.\d+)').captures.at(0)
-        python_lib = "#{python_prefix}/lib/libpython#{python_version}"
-        if File.exists? "#{python_lib}.a"
-          args << "-DPYTHON_LIBRARY='#{python_lib}.a'"
-        else
-          args << "-DPYTHON_LIBRARY='#{python_lib}.dylib'"
-        end
-        args << "-DPYTHON_INCLUDE_DIR='#{python_prefix}/include/#{which_python}'"
-      end
-
-
+    # As of 1.1.1 the install fails unless you do an out of tree build and put
+    # the source dir last in the args.
+    mkdir "macbuild" do
+      args = std_cmake_args
+      # Building the tests also runs them.
+      args << "-DBUILD_TESTS=ON"
       args << '..'
       system 'cmake', *args
       system "make install"
     end
   end
 
-  def which_python
-    "python" + `python -c 'import sys;print(sys.version[:3])'`.strip
+  test do
+    system "python", "-c", "import shiboken"
   end
 end
+
+__END__
+diff --git a/ext/sparsehash/google/sparsehash/sparseconfig.h b/ext/sparsehash/google/sparsehash/sparseconfig.h
+index 44a4dda..5073639 100644
+--- a/ext/sparsehash/google/sparsehash/sparseconfig.h
++++ b/ext/sparsehash/google/sparsehash/sparseconfig.h
+@@ -13,6 +13,16 @@
+     #define HASH_NAMESPACE stdext
+     /* The system-provided hash function including the namespace. */
+     #define SPARSEHASH_HASH  HASH_NAMESPACE::hash_compare
++/* libc++ does not implement the tr1 namespce, instead the
++ * equivalient functionality is placed in namespace std,
++ * so use when it targeting such systems (OS X 10.7 onwards) */
++#elif defined(_LIBCPP_VERSION)
++    /* the location of the header defining hash functions */
++    #define HASH_FUN_H <functional>
++    /* the namespace of the hash<> function */
++    #define HASH_NAMESPACE std
++    /* The system-provided hash function including the namespace. */
++    #define SPARSEHASH_HASH HASH_NAMESPACE::hash
+ #else
+     /* the location of the header defining hash functions */
+     #define HASH_FUN_H <tr1/functional>
